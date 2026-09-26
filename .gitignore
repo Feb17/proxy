@@ -1,0 +1,4 @@
+# 本地配置可能包含订阅链接，禁止提交
+*.dconf
+*.local.conf
+.DS_Store
