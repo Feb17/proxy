@@ -1,0 +1,434 @@
+#SUBSCRIBED https://raw.githubusercontent.com/Feb17/proxy/main/Stash.yaml
+
+# ============================================================
+# Stash 托管配置 · 适用于 Stash iOS / macOS（建议保持最新版）
+# 仓库：https://github.com/Feb17/proxy
+# 文档：https://stash.wiki
+# 注意：本仓库公开，订阅链接请勿写入本文件，用本地覆写（Override）填入，见 README.md
+# ============================================================
+
+mode: rule
+log-level: warning
+
+dns:
+  # 仅用于解析下方 DoH 服务器自身的域名（doh.pub），必须填 IP
+  default-nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+  # 官方建议移动设备只配 1~2 个国内 DNS：需要代理的域名走 Fake IP，不在本地解析，
+  # 配置国外 DNS 没有收益。阿里 + 腾讯 DoH 并发查询，取最先返回的结果
+  nameserver:
+    - https://223.5.5.5/dns-query
+    - https://doh.pub/dns-query
+  # 路由器 / 内网域名交给系统 DNS（即路由器下发的 DNS）解析
+  nameserver-policy:
+    '+.lan': system
+    '+.home.arpa': system
+  # 以下域名返回真实 IP（内网域名、STUN 打洞、主机联机、Windows 联网检测等不兼容 Fake IP 的场景）
+  fake-ip-filter:
+    # 内网
+    - '+.lan'
+    - '+.local'
+    - '+.home.arpa'
+    # STUN / TURN 打洞（语音视频通话、P2P）
+    - '+.stun.*.*'
+    - '+.stun.*.*.*'
+    - '+.stun.*.*.*.*'
+    - '+.stun.*.*.*.*.*'
+    - '+.turn.twilio.com'
+    # 主机游戏联机
+    - '+.srv.nintendo.net'
+    - 'xbox.*.microsoft.com'
+    - 'xbox.*.*.microsoft.com'
+    - '+.xboxlive.com'
+    - '+.battle.net'
+    - '+.battlenet.com'
+    - '+.battlenet.com.cn'
+    - '+.blzstatic.cn'
+    - '+.gtmdgcd.win'
+    # 联网检测（Windows / 公共 Wi-Fi 认证页）
+    - '+.msftncsi.com'
+    - '+.msftconnecttest.com'
+    - 'captive.apple.com'
+
+# ------------------------------------------------------------
+# 订阅节点源
+# ------------------------------------------------------------
+proxy-providers:
+  # 这里只是占位符！真实订阅链接请写在本地覆写中，切勿提交到公开仓库（见 README.md）
+  # 占位链接拉不到节点时，所有策略组会退化为 DIRECT
+  Subscription:
+    url: https://example.com/your-subscription-url
+    interval: 21600
+
+# ------------------------------------------------------------
+# 策略组
+# ------------------------------------------------------------
+proxy-groups:
+  # > 基础出口策略
+  - name: Proxy
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Proxy.png
+    proxies:
+      - '🚀 自动优选'
+      - '🇭🇰 香港节点'
+      - '🇺🇸 美国节点'
+      - '🇯🇵 日本节点'
+      - '🇰🇷 韩国节点'
+      - '🇨🇳 台湾节点'
+      - '🇸🇬 新加坡节点'
+      - '✈️ 我的节点'
+
+  # > 细分业务策略
+  - name: Apple
+    type: select
+    icon: https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/Apple_Arcade.png
+    proxies: [DIRECT, Proxy, '🇭🇰 香港节点', '🇺🇸 美国节点', '🇯🇵 日本节点', '🇰🇷 韩国节点', '🇸🇬 新加坡节点']
+
+  # ChatGPT / Claude / Gemini 均不支持香港地区，默认美国节点，且不提供香港选项
+  - name: Intelligence
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/ChatGPT.png
+    proxies: ['🇺🇸 美国节点', '🇯🇵 日本节点', '🇸🇬 新加坡节点', '🇨🇳 台湾节点', '🇰🇷 韩国节点', Proxy]
+
+  - name: Telegram
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png
+    proxies: ['🚀 自动优选', Proxy, '🇭🇰 香港节点', '🇺🇸 美国节点', '🇯🇵 日本节点', '🇰🇷 韩国节点', '🇸🇬 新加坡节点']
+
+  - name: Netflix
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Netflix.png
+    proxies: [Proxy, '🇭🇰 香港节点', '🇺🇸 美国节点', '🇯🇵 日本节点', '🇰🇷 韩国节点', '🇸🇬 新加坡节点']
+
+  - name: Disney+
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Disney.png
+    proxies: [Proxy, '🇭🇰 香港节点', '🇺🇸 美国节点', '🇯🇵 日本节点', '🇰🇷 韩国节点', '🇸🇬 新加坡节点']
+
+  - name: YouTube
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/YouTube.png
+    proxies: [Proxy, '🇭🇰 香港节点', '🇺🇸 美国节点', '🇯🇵 日本节点', '🇰🇷 韩国节点', '🇸🇬 新加坡节点']
+
+  - name: Spotify
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Spotify.png
+    proxies: [Proxy, '🇭🇰 香港节点', '🇺🇸 美国节点', '🇯🇵 日本节点', '🇰🇷 韩国节点', '🇸🇬 新加坡节点']
+
+  # TikTok 已退出香港，香港节点无法使用，故不提供香港选项
+  - name: TikTok
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok.png
+    proxies: ['🇯🇵 日本节点', '🇸🇬 新加坡节点', '🇺🇸 美国节点', '🇰🇷 韩国节点', '🇨🇳 台湾节点', Proxy]
+
+  - name: BiliBili
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/bilibili.png
+    proxies: [DIRECT, '🇭🇰 香港节点', '🇨🇳 台湾节点']
+
+  - name: GlobalMedia
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/HKMTMedia.png
+    proxies: [Proxy, '🇭🇰 香港节点', '🇺🇸 美国节点', '🇯🇵 日本节点', '🇰🇷 韩国节点', '🇸🇬 新加坡节点']
+
+  - name: Microsoft
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Windows_11.png
+    proxies: [DIRECT, Proxy, '🇭🇰 香港节点', '🇺🇸 美国节点', '🇯🇵 日本节点', '🇰🇷 韩国节点', '🇸🇬 新加坡节点']
+
+  - name: Gamer
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Game.png
+    proxies: [DIRECT, Proxy, '🇭🇰 香港节点', '🇺🇸 美国节点', '🇯🇵 日本节点', '🇰🇷 韩国节点', '🇸🇬 新加坡节点']
+
+  - name: Emby
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/HKMTMedia.png
+    proxies: [DIRECT, Proxy, '🇭🇰 香港节点', '🇯🇵 日本节点', '🇰🇷 韩国节点', '🇸🇬 新加坡节点']
+
+  # > 自动测速与地域筛选
+  # url-test：定时测速，自动选延迟最低的节点；tolerance：新节点需快出 50ms 才切换，避免出口 IP 频繁跳动；
+  # lazy：策略组一段时间未被使用时跳过测速，省电
+  # 正则按 RE2 语法编写（不用 lookbehind）：地区缩写前后不能紧跟英文字母，
+  # 避免 Russia / Australia / Status 被误判为 US、Network 被误判为 TW
+  - name: '🚀 自动优选'
+    type: url-test
+    icon: https://raw.githubusercontent.com/Semporia/Hand-Painted-icon/master/Universal/Final.png
+    use: [Subscription]
+    filter: '(?i)(🇭🇰|🇺🇸|🇯🇵|🇹🇼|🇸🇬|香港|美国|美國|日本|台湾|台灣|臺灣|新加坡|狮城|獅城|洛杉矶|洛杉磯|圣何塞|聖何塞|硅谷|矽谷|西雅图|西雅圖|纽约|紐約|芝加哥|达拉斯|達拉斯|东京|東京|大阪|台北|臺北|hong\s?kong|united\s?states|los\s?angeles|san\s?jose|silicon\s?valley|seattle|new\s?york|chicago|dallas|japan|tokyo|osaka|taiwan|taipei|singapore|(^|[^A-Za-z])(hkg?|usa?|jpn?|tw|sg)([^A-Za-z]|$))'
+    interval: 300
+    tolerance: 50
+    lazy: true
+
+  - name: '🇭🇰 香港节点'
+    type: url-test
+    icon: https://raw.githubusercontent.com/Semporia/Hand-Painted-icon/master/Rounded_Rectangle/Hong_Kong.png
+    use: [Subscription]
+    filter: '(?i)(🇭🇰|香港|hong\s?kong|(^|[^A-Za-z])hkg?([^A-Za-z]|$))'
+    interval: 300
+    tolerance: 50
+    lazy: true
+
+  - name: '🇺🇸 美国节点'
+    type: url-test
+    icon: https://raw.githubusercontent.com/Semporia/Hand-Painted-icon/master/Rounded_Rectangle/United_States.png
+    use: [Subscription]
+    filter: '(?i)(🇺🇸|美国|美國|洛杉矶|洛杉磯|圣何塞|聖何塞|硅谷|矽谷|西雅图|西雅圖|纽约|紐約|芝加哥|达拉斯|達拉斯|united\s?states|los\s?angeles|san\s?jose|silicon\s?valley|seattle|new\s?york|chicago|dallas|(^|[^A-Za-z])usa?([^A-Za-z]|$))'
+    interval: 300
+    tolerance: 50
+    lazy: true
+
+  - name: '🇯🇵 日本节点'
+    type: url-test
+    icon: https://raw.githubusercontent.com/Semporia/Hand-Painted-icon/master/Rounded_Rectangle/Japan.png
+    use: [Subscription]
+    filter: '(?i)(🇯🇵|日本|东京|東京|大阪|japan|tokyo|osaka|(^|[^A-Za-z])jpn?([^A-Za-z]|$))'
+    interval: 300
+    tolerance: 50
+    lazy: true
+
+  # 不匹配 🇨🇳，避免把大陆中转节点归入台湾组
+  - name: '🇨🇳 台湾节点'
+    type: url-test
+    icon: https://raw.githubusercontent.com/Semporia/Hand-Painted-icon/master/Rounded_Rectangle/China.png
+    use: [Subscription]
+    filter: '(?i)(🇹🇼|台湾|台灣|臺灣|台北|臺北|taiwan|taipei|(^|[^A-Za-z])tw([^A-Za-z]|$))'
+    interval: 300
+    tolerance: 50
+    lazy: true
+
+  - name: '🇰🇷 韩国节点'
+    type: url-test
+    icon: https://raw.githubusercontent.com/Semporia/Hand-Painted-icon/master/Rounded_Rectangle/South_Korea.png
+    use: [Subscription]
+    filter: '(?i)(🇰🇷|韩国|韓國|首尔|首爾|korea|seoul|(^|[^A-Za-z])kr([^A-Za-z]|$))'
+    interval: 300
+    tolerance: 50
+    lazy: true
+
+  - name: '🇸🇬 新加坡节点'
+    type: url-test
+    icon: https://raw.githubusercontent.com/Semporia/Hand-Painted-icon/master/Rounded_Rectangle/Singapore.png
+    use: [Subscription]
+    filter: '(?i)(🇸🇬|新加坡|狮城|獅城|singapore|(^|[^A-Za-z])sg([^A-Za-z]|$))'
+    interval: 300
+    tolerance: 50
+    lazy: true
+
+  # > 订阅中的全部节点
+  - name: '✈️ 我的节点'
+    type: select
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Airport.png
+    use: [Subscription]
+
+# ------------------------------------------------------------
+# 规则集合
+# 官方建议：大体量规则一律用 domain / ipcidr 类型（索引压缩，匹配快、省内存），
+# 避免 classical 类型（只能顺序匹配）。iOS 网络扩展有 50MB 内存上限，超出会被系统杀掉
+# ------------------------------------------------------------
+rule-providers:
+  private:
+    behavior: domain
+    format: text
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.list
+    interval: 86400
+  ai:
+    behavior: domain
+    format: text
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ai-!cn.list
+    interval: 86400
+  apple:
+    behavior: domain
+    format: text
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/apple.list
+    interval: 86400
+  telegram:
+    behavior: domain
+    format: text
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/telegram.list
+    interval: 86400
+  telegram-ip:
+    behavior: ipcidr
+    format: text
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/telegram.list
+    interval: 86400
+  github:
+    behavior: domain
+    format: text
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/github.list
+    interval: 86400
+  microsoft:
+    behavior: domain
+    format: text
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/microsoft.list
+    interval: 86400
+  steam:
+    behavior: domain
+    format: text
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/steam.list
+    interval: 86400
+  epicgames:
+    behavior: domain
+    format: text
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/epicgames.list
+    interval: 86400
+  playstation:
+    behavior: domain
+    format: text
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/playstation.list
+    interval: 86400
+  nintendo:
+    behavior: domain
+    format: text
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/nintendo.list
+    interval: 86400
+  youtube:
+    behavior: domain
+    format: text
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/youtube.list
+    interval: 86400
+  netflix:
+    behavior: domain
+    format: text
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/netflix.list
+    interval: 86400
+  netflix-ip:
+    behavior: ipcidr
+    format: text
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/netflix.list
+    interval: 86400
+  disney:
+    behavior: domain
+    format: text
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/disney.list
+    interval: 86400
+  spotify:
+    behavior: domain
+    format: text
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/spotify.list
+    interval: 86400
+  tiktok:
+    behavior: domain
+    format: text
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/tiktok.list
+    interval: 86400
+  bilibili:
+    behavior: domain
+    format: text
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/bilibili.list
+    interval: 86400
+  # 与 Surge 配置同源（blackmatrix7），_For_Clash 版本使用 +. 前缀，符合 Stash 域名规则集语法
+  globalmedia:
+    behavior: domain
+    format: text
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/GlobalMedia/GlobalMedia_Domain_For_Clash.txt
+    interval: 86400
+  proxy:
+    behavior: domain
+    format: text
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/geolocation-!cn.list
+    interval: 86400
+  cn:
+    behavior: domain
+    format: text
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.list
+    interval: 86400
+  private-ip:
+    behavior: ipcidr
+    format: text
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/private.list
+    interval: 86400
+  cn-ip:
+    behavior: ipcidr
+    format: text
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/cn.list
+    interval: 86400
+
+# ------------------------------------------------------------
+# 分流规则
+# 顺序原则：纯域名规则在前，会触发 DNS 解析的 IP 规则放到最后，
+# 减少不必要的 DNS 查询，并避免需要代理的域名先在本地被解析
+# ------------------------------------------------------------
+rules:
+  # > 局域网 IP 直连（no-resolve：只匹配直接访问 IP 的请求，不触发 DNS）
+  - IP-CIDR,192.168.0.0/16,DIRECT,no-resolve
+  - IP-CIDR,10.0.0.0/8,DIRECT,no-resolve
+  - IP-CIDR,172.16.0.0/12,DIRECT,no-resolve
+  - IP-CIDR,127.0.0.0/8,DIRECT,no-resolve
+  - IP-CIDR,169.254.0.0/16,DIRECT,no-resolve
+  - IP-CIDR,100.64.0.0/10,DIRECT,no-resolve
+  - IP-CIDR6,fe80::/10,DIRECT,no-resolve
+  - IP-CIDR6,fc00::/7,DIRECT,no-resolve
+  - IP-CIDR6,::1/128,DIRECT,no-resolve
+
+  # > NTP 授时直连（按端口匹配：pool.ntp.org 被境外规则集收录，走代理会导致授时失败或不准）
+  - DST-PORT,123,DIRECT
+
+  # > 内网 / 路由器管理域名直连（*.lan、*.local、router.asus.com 等）
+  - RULE-SET,private,DIRECT
+
+  # > Emby 私有服
+  - DOMAIN-SUFFIX,taotu.ink,Emby
+  - DOMAIN-SUFFIX,okemby.org,Emby
+  - DOMAIN-SUFFIX,uhdnow.com,Emby
+  - DOMAIN-SUFFIX,entertang.work,Emby
+
+  # > 苹果推送 APNs 走代理，解决部分海外应用收不到推送（网段来自 Stash 文档 / Apple 官方）
+  - DOMAIN-SUFFIX,push.apple.com,Proxy
+  - IP-CIDR,17.249.0.0/16,Proxy,no-resolve
+  - IP-CIDR,17.252.0.0/16,Proxy,no-resolve
+  - IP-CIDR,17.57.144.0/22,Proxy,no-resolve
+  - IP-CIDR,17.188.128.0/18,Proxy,no-resolve
+  - IP-CIDR,17.188.20.0/23,Proxy,no-resolve
+  - IP-CIDR6,2620:149:a44::/48,Proxy,no-resolve
+  - IP-CIDR6,2403:300:a42::/48,Proxy,no-resolve
+  - IP-CIDR6,2403:300:a51::/48,Proxy,no-resolve
+  - IP-CIDR6,2a01:b740:a42::/48,Proxy,no-resolve
+
+  # > 智能助手（ChatGPT / Claude / Gemini / Copilot / Grok / Perplexity / Cursor 等）
+  # 放在 GitHub、微软、流媒体规则之前，避免 Copilot 等域名被它们截走
+  - RULE-SET,ai,Intelligence
+
+  # > 苹果服务
+  - RULE-SET,apple,Apple
+
+  # > 社交平台（Telegram 客户端会直连 IP，IP 规则集加 no-resolve）
+  - RULE-SET,telegram,Telegram
+  - RULE-SET,telegram-ip,Telegram,no-resolve
+
+  # > 开发平台
+  - RULE-SET,github,Proxy
+
+  # > 微软生态
+  - RULE-SET,microsoft,Microsoft
+
+  # > 游戏生态
+  - RULE-SET,steam,Gamer
+  - RULE-SET,epicgames,Gamer
+  - RULE-SET,playstation,Gamer
+  - RULE-SET,nintendo,Gamer
+
+  # > 流媒体平台
+  - RULE-SET,youtube,YouTube
+  - RULE-SET,netflix,Netflix
+  - RULE-SET,netflix-ip,Netflix,no-resolve
+  - RULE-SET,disney,Disney+
+  - RULE-SET,spotify,Spotify
+  - RULE-SET,tiktok,TikTok
+  - RULE-SET,bilibili,BiliBili
+  - RULE-SET,globalmedia,GlobalMedia
+
+  # > 常见境外服务（geolocation-!cn）
+  - RULE-SET,proxy,Proxy
+
+  # > 大陆域名直连（geosite:cn）
+  - RULE-SET,cn,DIRECT
+
+  # > 局域网与国内 IP 兜底（会触发 DNS 解析，放在所有域名规则之后）
+  # 用 ipcidr 规则集代替 GEOIP，不依赖 App 内 GeoIP 数据库的版本
+  - RULE-SET,private-ip,DIRECT
+  - RULE-SET,cn-ip,DIRECT
+
+  # > 最终兜底
+  - MATCH,Proxy
