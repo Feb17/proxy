@@ -1,20 +1,21 @@
-# Surge / Stash 配置
+# Surge / Stash / Shadowrocket 配置
 
-自用代理托管配置。Surge 和 Stash 两份配置使用同一套策略组，分流思路一致。
+自用代理托管配置。Surge、Stash、Shadowrocket 三份配置使用同一套策略组，分流思路一致。
 
 | 客户端 | 托管链接 |
 | --- | --- |
 | Surge iOS / Mac 5+ | `https://raw.githubusercontent.com/Feb17/proxy/main/Surge.conf` |
 | Stash iOS / macOS | `https://raw.githubusercontent.com/Feb17/proxy/main/Stash.yaml` |
+| Shadowrocket iOS | `https://raw.githubusercontent.com/Feb17/proxy/main/Shadowrocket.conf` |
 
-> 本仓库是**公开**的。订阅链接一旦写进仓库并推送，任何人都能拿到你的节点。两份配置里的订阅地址都只是占位符，真实链接只保存在设备本地（方法见下文）。
+> 本仓库是**公开**的。订阅链接一旦写进仓库并推送，任何人都能拿到你的节点。Surge、Stash 配置里的订阅地址都只是占位符，真实链接只保存在设备本地（方法见下文）；Shadowrocket 的订阅在 App 首页添加，配置文件里没有订阅地址。
 > 如果不小心把订阅链接推送到了仓库，删除提交没有用（历史记录仍可见），请立即到机场后台**重置订阅链接**。
 
 ## 策略组
 
 | 策略组 | 默认 | 说明 |
 | --- | --- | --- |
-| Proxy | 🚀 自动优选 | 主出口，其余策略组的「Proxy」选项即指向这里 |
+| Proxy | 🚀 自动优选 | 主出口，其余策略组的「Proxy」选项即指向这里。Shadowrocket 中改名为「节点选择」（原因见下文） |
 | Apple | DIRECT | 苹果服务；APNs 推送单独走 Proxy |
 | Intelligence | 🇺🇸 美国节点 | ChatGPT / Claude / Gemini 等，不提供香港节点（不支持该地区） |
 | Telegram | 🚀 自动优选 | |
@@ -22,9 +23,9 @@
 | TikTok | 🇯🇵 日本节点 | 不提供香港节点（TikTok 已退出香港） |
 | BiliBili | DIRECT | 可切换港台节点看番剧 |
 | Microsoft / Gamer / Emby | DIRECT | |
-| 🚀 自动优选 | Surge：smart / Stash：url-test | 港 / 美 / 日 / 台 / 新加坡节点中自动择优 |
-| 🇭🇰 🇺🇸 🇯🇵 🇨🇳 🇰🇷 🇸🇬 地区组 | Surge：smart / Stash：url-test | 按节点名称自动归类（Surge 在主界面隐藏） |
-| ✈️ 我的节点 | select | 订阅中的全部节点 |
+| 🚀 自动优选 | Surge：smart / Stash、Shadowrocket：url-test | 港 / 美 / 日 / 台 / 新加坡节点中自动择优 |
+| 🇭🇰 🇺🇸 🇯🇵 🇨🇳 🇰🇷 🇸🇬 地区组 | Surge：smart / Stash、Shadowrocket：url-test | 按节点名称自动归类（Surge、Shadowrocket 在主界面隐藏） |
+| ✈️ 我的节点 | select | 订阅中的全部节点（Shadowrocket：App 首页的全部节点） |
 
 ## Surge
 
@@ -148,10 +149,71 @@ proxy-providers:
 - NTP 授时按端口（UDP 123）直连，不再逐个列举授时域名。
 - 未迁移的 Surge 专属设置：Ponte（Stash 的对应功能是 StashLink，在 App 内设置）、`skip-proxy`（Stash 没有这个配置项，局域网流量由规则直连）。
 
+## Shadowrocket
+
+以 Surge 版为基础改写（两者规则语法基本相同），配置项参考 [Shadowrocket 使用手册](https://github.com/LOWERTOP/Shadowrocket)和官方群组的懒人配置。
+
+### 1. 安装托管配置
+
+Shadowrocket → 配置 → 右上角 ➕ → 粘贴上面的 Shadowrocket 托管链接 → 下载，然后点击这份配置 →「使用配置」。
+
+首页的「全局路由」要选**配置**。选「代理」时所有流量都走首页选中的节点，策略组和分流规则全部失效。
+
+### 2. 在 App 首页添加订阅（不用改配置）
+
+首页 → 右上角 ➕ → 类型选 `Subscribe` → 在 URL 栏填入订阅链接 → 保存。
+
+- Shadowrocket 的订阅保存在 App 里，不写进配置文件，所以不需要占位符，也不需要 Surge 那样的关联配置。
+- 地区组、🚀 自动优选和 ✈️ 我的节点都用 `policy-regex-filter` 从首页的**全部节点**（所有订阅 + 本地节点）中筛选，有多个订阅时会一起参与。
+- 订阅自动更新：设置 → 订阅 → 自动后台更新（需要在系统「设置 → 通用 → 后台 App 刷新」中允许 Shadowrocket）。
+
+### 3. 自动更新配置
+
+配置中已写入 `update-url`。在 Shadowrocket 设置里的「配置」一项打开**自动后台更新**（间隔 1–7 天，同样依赖后台 App 刷新），也可以点击配置文件 →「更新配置」手动更新。
+
+更新配置会用仓库版本**覆盖**本地对这份配置的所有修改。如果需要长期保留自己的改动，可以用「扩展配置」新建一份包含本配置的本地配置，把改动写在那一份里。
+
+### 4. （可选）更换 GeoIP 数据库
+
+Surge 版使用只含中国大陆 IP 的 Hackl0us 数据库；Shadowrocket 内置了通用的 GeoIP 数据库，也可以换成同一个：设置 → GeoLite2 数据库 → 在「国家」的 URL 位置填入下面的链接 → 更新。
+
+```
+https://github.com/Hackl0us/GeoIP2-CN/raw/release/Country.mmdb
+```
+
+### 与 Surge 版的差异
+
+**主出口改名为「节点选择」**
+
+- Shadowrocket 的策略名不区分大小写（官方懒人配置中的 `YouTube` 分组，在规则里写作 `YOUTUBE`），自定义的 `Proxy` 分组会与内置策略 `PROXY`（首页选中的节点）重名，所以改名为「节点选择」。
+- 其余策略组的「节点选择」选项、`FINAL` 兜底都指向它，作用与 Surge 版的 Proxy 相同。
+
+**规则集**
+
+- 改用 blackmatrix7 为 Shadowrocket 生成的版本（`rule/Shadowrocket/`），分流顺序、策略指向与 Surge 版一致。
+- Apple、GlobalMedia 由 Surge 版的 `_All_No_Resolve` 单个 RULE-SET 拆分为 `_Domain.list`（DOMAIN-SET）+ `.list`（RULE-SET），这是 blackmatrix7 对 Shadowrocket 的推荐用法。
+- AI 规则与 Surge 版相同（EAlyce），修正苹果域名误伤和 NTP 授时的几条规则也一并保留。
+- Surge 内置的 `RULE-SET,LAN` 改用 blackmatrix7 的 `Lan_Resolve.list`，位置不变：IP 规则不带 `no-resolve`，解析到内网 IP 的域名（如 NAS 自定义域名）也能直连。
+- APNs 规则与 Stash 版一样直接写进配置（内容同 mrbruce516/apns-fix）。IPv6 网段统一写作 `IP-CIDR`，blackmatrix7 的 Shadowrocket 规则集也是这样写的。
+
+**策略组**
+
+- Shadowrocket 没有 smart 类型，地区组和自动优选改用 `url-test`，每 10 分钟测速一次，`tolerance=50`（新节点至少快 50ms 才切换）。
+- 地区筛选正则与 Stash 版完全相同（不用 lookbehind 的写法），🚀 自动优选同样取 5 个地区组正则的并集，只写城市名的节点也会参与。
+- 地区组加了 `hidden=1`，与 Surge 版一样不在分组列表中显示，但仍可在其他策略组里选择。
+
+**网络设置**
+
+- DNS：Shadowrocket 的 `dns-server` 可以直接填 DoH，阿里 + 腾讯 DoH 并行查询；两台都失败或超过 2 秒时回退到系统 DNS。
+- 新增 `tun-excluded-routes`：局域网、组播等网段不进入 Shadowrocket 的 TUN，与 AirPlay、局域网设备发现等功能的兼容性更好。
+- 新增 `block-quic = all-proxy`：走代理的连接屏蔽 QUIC，回落到 HTTP/2；直连不受影响。
+- 未迁移的 Surge 专属设置：Ponte、DOMAIN-SET 的 `extended-matching`、`FINAL` 的 `dns-failed`、策略组图标 `icon-url`。
+
 ## 规则来源
 
 - [blackmatrix7/ios_rule_script](https://github.com/blackmatrix7/ios_rule_script)
 - [MetaCubeX/meta-rules-dat](https://github.com/MetaCubeX/meta-rules-dat)（Stash：geosite / geoip 规则集）
-- [EAlyce/conf](https://github.com/EAlyce/conf)（Surge：AI 规则）
+- [EAlyce/conf](https://github.com/EAlyce/conf)（Surge、Shadowrocket：AI 规则）
 - [mrbruce516/apns-fix](https://github.com/mrbruce516/apns-fix)、[Stash 文档](https://stash.wiki/faq/ios-push-notifications)（APNs 推送）
-- [Hackl0us/GeoIP2-CN](https://github.com/Hackl0us/GeoIP2-CN)（Surge：GeoIP 数据库）
+- [Hackl0us/GeoIP2-CN](https://github.com/Hackl0us/GeoIP2-CN)（Surge、Shadowrocket 可选：GeoIP 数据库）
+- [LOWERTOP/Shadowrocket](https://github.com/LOWERTOP/Shadowrocket)（Shadowrocket 使用手册与配置项说明）
